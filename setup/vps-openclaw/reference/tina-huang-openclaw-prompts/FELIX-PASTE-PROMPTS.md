@@ -24,7 +24,7 @@ Steps:
 3. Propose 3–7 specialists. For each: name, role, model tier (7b / 32b / 72b), cron vs on-demand, Discord channel for output.
 4. Estimate load (not API $): which jobs must be 7b + 300s timeout to avoid cron failures.
 5. Wait for Joshua’s approval.
-6. Build ONE agent end-to-end, prove with openclaw cron trigger or a test message, then stop.
+6. Build ONE agent end-to-end, prove with `openclaw cron run <job-id>` or a test message, then stop.
 7. Repeat for the next agent only after approval.
 
 Principles: 7b for scheduled scans and briefs; 32b for interactive work; 72b sparingly. Privacy-sensitive tasks stay on Ollama. Coordinate via workspace files and cron — no chat-only “I’ll do that every morning.”
@@ -73,7 +73,7 @@ Tasks:
 1. Run openclaw security audit (or equivalent checks in the docs). Summarize critical/high findings.
 2. Propose fixes; do not apply destructive changes without Joshua’s approval.
 3. Add or update a cron job to run this audit daily at 23:00 Europe/Madrid, model ollama/qwen2.5:7b, timeout 300, deliver summary to Discord channel:1505186587321831445
-4. Confirm cron with openclaw cron list and one openclaw cron trigger test.
+4. Confirm cron with `openclaw cron run <job-id>` then `openclaw cron runs --id <job-id>`.
 
 Never paste secrets, .env contents, or gateway tokens into Discord.
 ```
@@ -93,7 +93,7 @@ Constraints: ollama/qwen2.5:7b, --session isolated, --timeout-seconds 300, persi
 
 Process:
 1. openclaw cron add with the above
-2. openclaw cron trigger once
+2. openclaw cron run <job-id>
 3. Reply with job id, cron expr, and openclaw cron runs status
 
 Do not promise scheduling in chat without creating the cron job.

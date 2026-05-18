@@ -33,4 +33,4 @@ openclaw cron add \
 echo ""
 openclaw cron list
 echo ""
-echo "Trigger test: openclaw cron trigger <new-job-id>"
+echo "Test run: openclaw cron run <new-job-id>   # then: openclaw cron list && openclaw cron runs --id <new-job-id>"

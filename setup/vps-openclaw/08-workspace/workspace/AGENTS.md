@@ -34,7 +34,7 @@ When Joshua asks for daily/weekly/recurring tasks (briefings, summaries, checks)
    - `--model ollama/qwen2.5:7b` (not 72b — cron times out on remote 72b)
    - `--timeout-seconds 300` (or 600 for heavy jobs)
    - `--announce --channel discord --to "channel:CHANNEL_ID"` (use channel, not user DM, unless Joshua asked for DM)
-2. Run `openclaw cron trigger <job-id>` once to verify.
+2. Run `openclaw cron run <job-id>`, wait 2–5 min, then check `openclaw cron list` and `openclaw cron runs --id <job-id>`.
 3. Reply with: job name, cron expression, timezone, model, timeout, delivery target, and last run status from `openclaw cron runs --id <job-id>`.
 
 See repo: `setup/vps-openclaw/reference/javiconsu-felix-adapted/CRON-EXAMPLES.md`

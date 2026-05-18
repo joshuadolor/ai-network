@@ -61,7 +61,8 @@ chmod 600 ~/.openclaw/.env
 
 ```bash
 CHANNEL_ID=1505186587321831445 bash ~/AINetwork/setup/vps-openclaw/scripts/recreate-daily-ai-cron.sh
-openclaw cron trigger <new-job-id>
+openclaw cron run <new-job-id>
+openclaw cron runs --id <new-job-id> --limit 10
 openclaw cron runs --id <new-job-id>
 ```
 

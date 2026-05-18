@@ -26,8 +26,10 @@ openclaw cron add \
   --to "channel:1505186587321831445"
 
 openclaw cron list
-openclaw cron trigger <new-job-id>
-openclaw cron runs --id <new-job-id>
+openclaw cron run <new-job-id>
+# wait 2-5 min, then:
+openclaw cron list
+openclaw cron runs --id <new-job-id> --limit 10
 ```
 
 Expect `status: ok`. If `error` and `model-call-started` timeout, confirm KUBB Ollama is up and the job uses **7b**.
