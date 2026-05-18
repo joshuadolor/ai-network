@@ -1,0 +1,232 @@
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/home/deploy/.openclaw/workspace",
+      "model": {
+        "primary": "ollama/qwen2.5:7b",
+        "fallbacks": ["ollama/qwen2.5:32b", "ollama/qwen2.5:72b"]
+      },
+      "models": {
+        "ollama/qwen2.5:72b": { "alias": "heavy" },
+        "ollama/qwen2.5:32b": { "alias": "mid" },
+        "ollama/qwen2.5:7b": { "alias": "fast" }
+      },
+      "timeoutSeconds": 600,
+      "compaction": {
+        "mode": "safeguard",
+        "reserveTokensFloor": 24000,
+        "keepRecentTokens": 40000,
+        "midTurnPrecheck": { "enabled": true },
+        "truncateAfterCompaction": true,
+        "maxActiveTranscriptBytes": "20mb",
+        "notifyUser": true,
+        "model": "ollama/qwen2.5:7b"
+      },
+      "contextLimits": {
+        "toolResultMaxChars": 12000,
+        "postCompactionMaxChars": 8000
+      },
+      "contextInjection": "continuation-skip",
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "30m",
+        "keepLastAssistants": 3,
+        "tools": { "deny": ["browser", "canvas"] },
+        "softTrim": {
+          "maxChars": 3000,
+          "headChars": 1200,
+          "tailChars": 1500
+        },
+        "hardClear": {
+          "enabled": true,
+          "placeholder": "[Earlier tool output cleared]"
+        }
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "REPLACE_WITH_GATEWAY_TOKEN_OR_USE_openclaw_doctor"
+    },
+    "port": 18789,
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "controlUi": {
+      "allowInsecureAuth": true
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "contacts.add",
+        "calendar.add",
+        "reminders.add",
+        "sms.send",
+        "sms.search"
+      ]
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer",
+    "resetTriggers": ["/new", "/reset"]
+  },
+  "tools": {
+    "profile": "coding",
+    "alsoAllow": ["browser"],
+    "web": {
+      "search": {
+        "provider": "duckduckgo",
+        "enabled": true
+      }
+    }
+  },
+  "browser": {
+    "enabled": true,
+    "defaultProfile": "openclaw",
+    "headless": true,
+    "noSandbox": true,
+    "executablePath": "/usr/bin/chromium-browser",
+    "localLaunchTimeoutMs": 30000,
+    "localCdpReadyTimeoutMs": 12000
+  },
+  "plugins": {
+    "entries": {
+      "ollama": { "enabled": true, "config": {} },
+      "duckduckgo": { "enabled": true, "config": {} },
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true,
+            "timezone": "Europe/Madrid",
+            "frequency": "0 3 * * *"
+          }
+        }
+      },
+      "browser": { "enabled": true }
+    },
+    "allow": ["discord", "browser", "ollama", "duckduckgo", "memory-core"],
+    "bundledDiscovery": "compat"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://REPLACE_KUBB_TAILSCALE_IP:11434",
+        "api": "ollama",
+        "apiKey": "ollama-local",
+        "models": [
+          {
+            "id": "qwen2.5:7b",
+            "name": "qwen2.5:7b",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 32768,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": true, "supportsUsageInStreaming": true }
+          },
+          {
+            "id": "qwen2.5:32b",
+            "name": "qwen2.5:32b",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 32768,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": true, "supportsUsageInStreaming": true }
+          },
+          {
+            "id": "qwen2.5:72b",
+            "name": "qwen2.5:72b",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 32768,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": true, "supportsUsageInStreaming": true }
+          },
+          {
+            "id": "deepseek-coder:33b",
+            "name": "deepseek-coder:33b",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 16384,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": false, "supportsUsageInStreaming": true }
+          },
+          {
+            "id": "nomic-embed-text:latest",
+            "name": "nomic-embed-text:latest",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 8192,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": false, "supportsUsageInStreaming": true }
+          }
+        ]
+      }
+    }
+  },
+  "auth": {
+    "profiles": {
+      "ollama:default": {
+        "provider": "ollama",
+        "mode": "api_key"
+      }
+    }
+  },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": {
+        "source": "env",
+        "provider": "default",
+        "id": "DISCORD_BOT_TOKEN"
+      },
+      "groupPolicy": "open"
+    }
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": { "enabled": true },
+        "command-logger": { "enabled": true }
+      }
+    }
+  },
+  "commands": {
+    "ownerAllowFrom": ["discord:REPLACE_YOUR_DISCORD_USER_ID"]
+  },
+  "messages": {
+    "groupChat": {
+      "visibleReplies": "automatic"
+    }
+  },
+  "cron": {
+    "failureDestination": {
+      "mode": "announce",
+      "channel": "discord",
+      "to": "channel:REPLACE_ALERTS_CHANNEL_ID"
+    },
+    "failureAlert": {
+      "enabled": true,
+      "after": 1,
+      "cooldownMs": 300000
+    }
+  },
+  "skills": {
+    "entries": {
+      "hostinger-email": { "enabled": true }
+    }
+  }
+}

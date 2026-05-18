@@ -1,0 +1,14 @@
+# Local secrets (copy from .example on the VPS)
+setup/vps-apps/02-open-webui/open-webui.env
+
+# Cursor MCP (may contain API keys) — use .cursor/mcp.json.example as template
+.cursor/mcp.json
+
+# Anything that looks like a local OpenClaw env file (Discord tokens, etc.)
+**/.openclaw/.env
+*.env.local
+
+.env
+!.env.example
+!**/.env.example
+setup/vps-openclaw/.env
