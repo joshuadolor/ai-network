@@ -74,6 +74,7 @@ done
 OC="${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 WS_SRC="$REPO_ROOT/setup/vps-openclaw/08-workspace/workspace"
 SKILLS_SRC="$REPO_ROOT/setup/vps-openclaw/skills"
+LOCAL_IMG_SCRIPTS="$REPO_ROOT/setup/ai-server/05-image-video/local"
 REF_SRC="$REPO_ROOT/setup/vps-openclaw/reference"
 
 if [[ ! -d "$REPO_ROOT/setup/vps-openclaw" ]]; then
@@ -178,6 +179,20 @@ for f in USER.md MEMORY.md; do
 done
 
 run mkdir -p "$OC/workspace/memory" "$OC/workspace/docs" "$OC/workspace/reference"
+
+# --- Sync ComfyUI API scripts into local-image-gen skill (canonical: ai-server/05-image-video/local) ---
+# Sync shared ComfyUI helpers only (skill keeps VPS-specific generate/health + comfyui_env)
+if [[ -d "$LOCAL_IMG_SCRIPTS" && -d "$SKILLS_SRC/local-image-gen/scripts" ]]; then
+  for py in comfyui_client.py comfyui_list_models.py; do
+    src="$LOCAL_IMG_SCRIPTS/$py"
+    [[ -f "$src" ]] || continue
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      echo "[dry-run] cp $src -> $SKILLS_SRC/local-image-gen/scripts/"
+    else
+      cp "$src" "$SKILLS_SRC/local-image-gen/scripts/"
+    fi
+  done
+fi
 
 # --- Workspace skills (every subfolder under skills/ except README) ---
 echo ""

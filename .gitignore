@@ -1,5 +1,10 @@
 # Local secrets (copy from .example on the VPS)
 setup/vps-apps/02-open-webui/open-webui.env
+setup/ai-server/05-image-video/scripts/start_comfyui.env
+setup/ai-server/05-image-video/local/comfyui_outputs/
+**/__pycache__/
+*.pyc
+setup/ai-server/05-image-video/scripts/comfyui_server.log
 
 # Cursor MCP (may contain API keys) — use .cursor/mcp.json.example as template
 .cursor/mcp.json

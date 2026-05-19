@@ -36,6 +36,12 @@ pip install diffusers transformers accelerate torch --extra-index-url https://do
 
 - [ ] `python -c "import diffusers; print(diffusers.__version__)"` works inside the venv.
 
+## ComfyUI API (KUBB / OpenClaw)
+
+- Supervisor: [scripts/start_comfyui.sh](scripts/start_comfyui.sh)
+- Generate images over HTTP: [local/README.md](local/README.md) (`comfyui_generate.py`, health check, list models)
+- OpenClaw skill: [../../vps-openclaw/skills/local-image-gen/](../../vps-openclaw/skills/local-image-gen/)
+
 ## Next
 
 [../../network-tailscale/README.md](../../network-tailscale/README.md)

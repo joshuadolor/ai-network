@@ -6,6 +6,7 @@ import urllib.request
 
 from comfyui_env import base_url, reject_localhost
 
+
 def main() -> int:
     base = base_url()
     try:
@@ -27,6 +28,7 @@ def main() -> int:
         except OSError as e:
             print(f"fail {url}: {e}", file=sys.stderr)
     return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
