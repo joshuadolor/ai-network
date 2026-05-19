@@ -70,7 +70,7 @@ done
 
 OC="${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 WS_SRC="$REPO_ROOT/setup/vps-openclaw/08-workspace/workspace"
-SKILL_SRC="$REPO_ROOT/setup/vps-openclaw/skills/hostinger-email"
+SKILLS_SRC="$REPO_ROOT/setup/vps-openclaw/skills"
 REF_SRC="$REPO_ROOT/setup/vps-openclaw/reference"
 
 if [[ ! -d "$REPO_ROOT/setup/vps-openclaw" ]]; then
@@ -176,26 +176,40 @@ done
 
 run mkdir -p "$OC/workspace/memory" "$OC/workspace/docs" "$OC/workspace/reference"
 
-# --- Email skill ---
+# --- Workspace skills (every subfolder under skills/ except README) ---
 echo ""
-echo "Skill hostinger-email:"
-if [[ -n "$BACKUP_DIR" && -d "$OC/workspace/skills/hostinger-email" ]]; then
-  run cp -R "$OC/workspace/skills/hostinger-email" "$BACKUP_DIR/skills-hostinger-email"
+echo "Workspace skills:"
+if [[ ! -d "$SKILLS_SRC" ]]; then
+  echo "  missing $SKILLS_SRC" >&2
+  exit 1
 fi
-if [[ "$DRY_RUN" -eq 1 ]]; then
-  echo "[dry-run] cp -R $SKILL_SRC -> $OC/workspace/skills/hostinger-email"
-else
-  run mkdir -p "$OC/workspace/skills"
-  cp -R "$SKILL_SRC" "$OC/workspace/skills/"
-  chmod 700 "$OC/workspace/skills/hostinger-email/scripts/mail.py"
-  echo "  updated $OC/workspace/skills/hostinger-email/"
-fi
+run mkdir -p "$OC/workspace/skills"
+shopt -s nullglob
+for skill_dir in "$SKILLS_SRC"/*/; do
+  name="$(basename "$skill_dir")"
+  [[ "$name" == .* ]] && continue
+  if [[ -n "$BACKUP_DIR" && -d "$OC/workspace/skills/$name" ]]; then
+    run cp -R "$OC/workspace/skills/$name" "$BACKUP_DIR/skills-$name"
+  fi
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] cp -R $skill_dir -> $OC/workspace/skills/$name"
+  else
+    cp -R "$skill_dir" "$OC/workspace/skills/"
+    for py in "$OC/workspace/skills/$name"/scripts/*.py; do
+      [[ -f "$py" ]] && chmod 700 "$py"
+    done
+    echo "  updated $OC/workspace/skills/$name/"
+  fi
+done
+shopt -u nullglob
 
 # --- Reference docs for Felix / you (not loaded as soul; handy in workspace) ---
 echo ""
 echo "Reference copies (cron + Tina paste prompts):"
 copy_file "$REF_SRC/javiconsu-felix-adapted/CRON-EXAMPLES.md" "$OC/workspace/reference/CRON-EXAMPLES.md"
 copy_file "$REF_SRC/tina-huang-openclaw-prompts/FELIX-PASTE-PROMPTS.md" "$OC/workspace/reference/FELIX-PASTE-PROMPTS.md"
+copy_file "$REF_SRC/lead-site-trial-workflow.md" "$OC/workspace/reference/lead-site-trial-workflow.md"
+run mkdir -p "$OC/workspace/docs/leads"
 
 # --- .env ---
 if [[ "$ENV_INIT" -eq 1 ]]; then

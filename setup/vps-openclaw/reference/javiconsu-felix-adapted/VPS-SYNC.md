@@ -13,7 +13,7 @@ cd ~/AINetwork && git pull
 ```bash
 cd ~/AINetwork && git pull
 
-# Safe default: refresh SOUL/AGENTS/HEARTBEAT/TOOLS + email skill; backup first
+# Safe default: refresh SOUL/AGENTS/HEARTBEAT/TOOLS + all skills/; backup first
 bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork
 
 # Full recommended pass (first time or after repo changes):
@@ -33,7 +33,7 @@ bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork \
 | `~/.openclaw/workspace/AGENTS.md` | `08-workspace/workspace/AGENTS.md` |
 | `~/.openclaw/workspace/HEARTBEAT.md` | `08-workspace/workspace/HEARTBEAT.md` |
 | `~/.openclaw/workspace/TOOLS.md` | `08-workspace/workspace/TOOLS.md` |
-| `~/.openclaw/workspace/skills/hostinger-email/` | `skills/hostinger-email/` |
+| `~/.openclaw/workspace/skills/*/` | `skills/*/` (see [skills/README.md](../../skills/README.md)) |
 
 **Do not overwrite** (keep your data): `MEMORY.md`, `memory/YYYY-MM-DD.md`, `USER.md` unless you choose to merge manually.
 

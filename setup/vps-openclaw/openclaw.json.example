@@ -3,8 +3,8 @@
     "defaults": {
       "workspace": "/home/deploy/.openclaw/workspace",
       "model": {
-        "primary": "ollama/qwen2.5:7b",
-        "fallbacks": ["ollama/qwen2.5:32b", "ollama/qwen2.5:72b"]
+        "primary": "ollama/qwen2.5:32b",
+        "fallbacks": ["ollama/qwen2.5:72b", "ollama/qwen2.5:7b"]
       },
       "models": {
         "ollama/qwen2.5:72b": { "alias": "heavy" },
@@ -20,7 +20,7 @@
         "truncateAfterCompaction": true,
         "maxActiveTranscriptBytes": "20mb",
         "notifyUser": true,
-        "model": "ollama/qwen2.5:7b"
+        "model": "ollama/qwen2.5:32b"
       },
       "contextLimits": {
         "toolResultMaxChars": 12000,
@@ -226,7 +226,16 @@
   },
   "skills": {
     "entries": {
-      "hostinger-email": { "enabled": true }
+      "hostinger-email": { "enabled": true },
+      "deep-research": { "enabled": true },
+      "lead-site-pipeline": { "enabled": true },
+      "cn-html-design": { "enabled": true },
+      "ui-ux-build": { "enabled": true },
+      "site-preview-ngrok": { "enabled": true },
+      "local-image-gen": { "enabled": true },
+      "crypto-watch": { "enabled": true },
+      "ui-ux-review": { "enabled": true },
+      "proactive-ops": { "enabled": true }
     }
   }
 }

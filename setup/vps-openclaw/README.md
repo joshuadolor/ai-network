@@ -16,11 +16,13 @@ This Hostinger VPS is **only for OpenClaw**: gateway, **Discord** channel, memor
 | 7 | [07-prompts](07-prompts/README.md) | Ready-to-use prompt library: hardware selector, setup wizard, Mission Control, self-improvement, security audit |
 | 8 | [08-workspace](08-workspace/README.md) | Where `SOUL.md`, `AGENTS.md`, `USER.md`, `MEMORY.md` live on the VPS (`~/.openclaw/workspace/`) |
 
-**Reference gateway config (Felix + compaction + browser + email):** [openclaw.json.example](openclaw.json.example) and [.env.example](.env.example). Copy skills from [skills/hostinger-email/](skills/hostinger-email/) to `~/.openclaw/workspace/skills/` on the VPS.
+**Reference gateway config (Felix + compaction + browser + email):** [openclaw.json.example](openclaw.json.example) and [.env.example](.env.example). Bundled skills: [skills/](skills/) (research, image, crypto watch, UX, proactive, email) — synced by `update-vps-openclaw.sh`.
 
 **Felix workspace** = [javiConsu/felix-workspace](https://github.com/javiConsu/felix-workspace) (CEO tone, cron discipline, production lock) + [Tina Huang](https://www.youtube.com/watch?v=oOCN30ulVyo) patterns (memory logging, multi-agent/cron hygiene), adapted for **Ollama on KUBB + OpenClaw VPS + Discord**.
 
 **Update on VPS:** `bash setup/vps-openclaw/scripts/update-vps-openclaw.sh` (see `--help`). Templates: [08-workspace/workspace/](08-workspace/workspace/).
+
+**Lead → site trial** (businesses without websites → HTML → ngrok): [reference/lead-site-trial-workflow.md](reference/lead-site-trial-workflow.md) · skill [lead-site-pipeline](skills/lead-site-pipeline/).
 
 **Tina Huang prompts ([video](https://www.youtube.com/watch?v=oOCN30ulVyo), [Google Doc](https://docs.google.com/document/d/1cJPzi3j0WioG-PzTZ5eQR7HxzEETLlr2zHRtYvIsUq0/edit)):** full export + Felix versions in [reference/tina-huang-openclaw-prompts/](reference/tina-huang-openclaw-prompts/).
 
