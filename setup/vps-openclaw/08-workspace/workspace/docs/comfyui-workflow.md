@@ -8,14 +8,23 @@
 
 ## API workflow file on OpenClaw VPS
 
-Set in `~/.openclaw/.env`:
+**Path:** `/home/deploy/.openclaw/comfyui-workflow-api.json`
+
+Created automatically if missing when you run:
+
+```bash
+bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork
+# or: update-vps-openclaw.sh (installs starter workflow when file absent)
+```
+
+Set in `~/.openclaw/.env` (install script appends this):
 
 ```bash
 COMFYUI_BASE_URL=http://100.86.160.110:8188
 COMFYUI_WORKFLOW_API=/home/deploy/.openclaw/comfyui-workflow-api.json
 ```
 
-Export from ComfyUI on KUBB: **Save (API Format)** → copy to the path above.
+**Starter workflow** uses `sd_xl_base_1.0.safetensors` — edit `ckpt_name` in the JSON if KUBB uses a different checkpoint, or replace the whole file with **Save (API Format)** from ComfyUI on KUBB.
 
 ## Generate (exec)
 

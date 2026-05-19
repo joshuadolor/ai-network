@@ -37,6 +37,8 @@ bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork \
 
 **Do not overwrite** (keep your data): `MEMORY.md`, `memory/YYYY-MM-DD.md`, `USER.md` unless you choose to merge manually.
 
+**When Felix is lost:** `~/.openclaw/workspace/docs/PROJECT-LOOKUP.md` — search `~/AINetwork` before guessing.
+
 ## 3. Gateway config
 
 Edit `~/.openclaw/openclaw.json` — merge from `setup/vps-openclaw/openclaw.json.example`:

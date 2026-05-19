@@ -15,17 +15,15 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from comfyui_env import base_url, reject_localhost, workflow_api_path
+
 
 def _base() -> str:
-    return (os.environ.get("COMFYUI_BASE_URL") or "").rstrip("/")
+    return base_url()
 
 
 def _workflow_path() -> Path | None:
-    raw = os.environ.get("COMFYUI_WORKFLOW_API", "").strip()
-    if not raw:
-        return None
-    p = Path(raw).expanduser()
-    return p if p.is_file() else None
+    return workflow_api_path()
 
 
 def _load_workflow(path: Path) -> dict[str, Any]:
@@ -123,15 +121,22 @@ def main() -> int:
     args = parser.parse_args()
 
     base = _base()
-    if not base:
-        print("COMFYUI_BASE_URL not set", file=sys.stderr)
+    try:
+        reject_localhost(base)
+    except ValueError as e:
+        print(json.dumps({"ok": False, "error": str(e)}), file=sys.stderr)
         return 2
 
     wf_path = args.workflow or _workflow_path()
     if not wf_path:
         print(
-            "COMFYUI_WORKFLOW_API not set or missing file — export API workflow from ComfyUI "
-            "(see setup/ai-server/05-comfyui/README.md)",
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": "Missing ~/.openclaw/comfyui-workflow-api.json — run: "
+                    "bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork",
+                }
+            ),
             file=sys.stderr,
         )
         return 3

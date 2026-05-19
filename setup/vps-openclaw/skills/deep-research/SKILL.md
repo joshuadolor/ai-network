@@ -24,6 +24,7 @@ Also use for **lead-site-pipeline** phase 1: local businesses **without a real w
    - **Sources** (linked titles or URLs)
    - **Open questions / risks**
 6. **Persist** — save the full brief to `workspace/docs/research-YYYY-MM-DD-<slug>.md` and note the path in chat.
+7. Wrap the run with skill **ralph-loop** (5-minute Discord updates) — research is always long.
 
 ## Quality bar
 

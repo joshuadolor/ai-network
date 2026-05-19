@@ -14,6 +14,7 @@
 #   --templates-all        Overwrite BOOTSTRAP ERRORS DREAMS IDENTITY from repo
 #   --config-merge         Merge openclaw.json.example into openclaw.json (keeps tokens/URLs)
 #   --env-init             Copy .env.example → .env if .env missing (chmod 600)
+#   --force-workflow       Overwrite ~/.openclaw/comfyui-workflow-api.json from repo example
 #   --restart              openclaw gateway restart (sources .env first)
 #   --cron                 Run recreate-daily-ai-cron.sh (set CHANNEL_ID or --channel)
 #   --channel ID           Default Discord channel for --cron (default: alerts channel)
@@ -29,6 +30,7 @@ FORCE_MEMORY=0
 TEMPLATES_ALL=0
 CONFIG_MERGE=0
 ENV_INIT=0
+FORCE_WORKFLOW=0
 DO_RESTART=0
 DO_CRON=0
 CHANNEL_ID="${CHANNEL_ID:-1505186587321831445}"
@@ -51,6 +53,7 @@ while [[ $# -gt 0 ]]; do
     --templates-all) TEMPLATES_ALL=1; shift ;;
     --config-merge) CONFIG_MERGE=1; shift ;;
     --env-init) ENV_INIT=1; shift ;;
+    --force-workflow) FORCE_WORKFLOW=1; shift ;;
     --restart) DO_RESTART=1; shift ;;
     --cron) DO_CRON=1; shift ;;
     --channel)
@@ -210,7 +213,28 @@ copy_file "$REF_SRC/javiconsu-felix-adapted/CRON-EXAMPLES.md" "$OC/workspace/ref
 copy_file "$REF_SRC/tina-huang-openclaw-prompts/FELIX-PASTE-PROMPTS.md" "$OC/workspace/reference/FELIX-PASTE-PROMPTS.md"
 copy_file "$REF_SRC/lead-site-trial-workflow.md" "$OC/workspace/reference/lead-site-trial-workflow.md"
 copy_file "$WS_SRC/docs/comfyui-workflow.md" "$OC/workspace/docs/comfyui-workflow.md"
+copy_file "$WS_SRC/docs/PROJECT-LOOKUP.md" "$OC/workspace/docs/PROJECT-LOOKUP.md"
 run mkdir -p "$OC/workspace/docs/leads" "$OC/workspace/docs/images"
+
+# --- ComfyUI API workflow (Felix image gen) ---
+echo ""
+echo "ComfyUI workflow API file:"
+WORKFLOW_DEST="$OC/comfyui-workflow-api.json"
+if [[ "$FORCE_WORKFLOW" -eq 1 ]]; then
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] bash $SCRIPT_DIR/install-comfyui-workflow.sh $REPO_ROOT --force"
+  else
+    bash "$SCRIPT_DIR/install-comfyui-workflow.sh" "$REPO_ROOT" --force
+  fi
+elif [[ ! -f "$WORKFLOW_DEST" ]]; then
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] bash $SCRIPT_DIR/install-comfyui-workflow.sh $REPO_ROOT"
+  else
+    bash "$SCRIPT_DIR/install-comfyui-workflow.sh" "$REPO_ROOT"
+  fi
+else
+  echo "  kept $WORKFLOW_DEST"
+fi
 
 # --- .env ---
 if [[ "$ENV_INIT" -eq 1 ]]; then

@@ -1,5 +1,6 @@
 # Tools
 
+- **Lost / can’t find something?** Read `docs/PROJECT-LOOKUP.md` → grep `~/AINetwork/setup` → skills → reference → memory. Do not guess.
 - Chat / reasoning: local Ollama via gateway config (7b/32b routine; 72b / `heavy` when needed).
 - Web search: DuckDuckGo (config) — pair with skill **deep-research** for multi-step briefs.
 - Skills catalog: repo `setup/vps-openclaw/skills/README.md` (synced to `workspace/skills/`). **Read SKILL.md before acting.**
@@ -11,6 +12,7 @@
 - **crypto-watch** — `python3 {baseDir}/scripts/watch.py`; read-only; optional `CRYPTO_WATCH_SYMBOLS`.
 - **ui-ux-review** — structured UX critique; browser for URLs.
 - **proactive-ops** — cron + heartbeat discipline; see HEARTBEAT.md.
+- **ralph-loop** — `ralph_status.py start|should-ping|record-ping|done`; Discord ping every 5 min on long tasks.
 - **hostinger-email** — `python3 {baseDir}/scripts/mail.py list|send` via `exec`.
 - Browser: `browser` tool, profile `openclaw` (headless on VPS); email fallback; UX reviews.
 - Memory: `memory_search`, `memory_get`; files under `memory/` and MEMORY.md.

@@ -235,7 +235,8 @@
       "local-image-gen": { "enabled": true },
       "crypto-watch": { "enabled": true },
       "ui-ux-review": { "enabled": true },
-      "proactive-ops": { "enabled": true }
+      "proactive-ops": { "enabled": true },
+      "ralph-loop": { "enabled": true }
     }
   }
 }

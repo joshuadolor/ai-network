@@ -28,7 +28,7 @@ workspace/docs/leads/<slug>/
 
 3. **Gather resources** for Phase 2: category copy angles, competitor site patterns (structure only, no copy-paste), stock/placeholder image URLs, color hints from niche.
 
-Deliver: table in Discord + paths. Use completion report template.
+Deliver: table in Discord + paths. Use completion report template. Run skill **ralph-loop** for the whole pipeline (ping every ~5 min).
 
 ### Phase 2 — Build (`ui-ux-build` + `cn-html-design`)
 

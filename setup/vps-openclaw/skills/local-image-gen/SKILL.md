@@ -6,14 +6,25 @@ user-invocable: true
 
 # Local image generation (KUBB ComfyUI)
 
-Images are generated on the **AI server** (`100.86.160.110:8188` over Tailscale — confirm with Joshua if IP changed). The OpenClaw VPS triggers ComfyUI; it does not run GPU work locally.
+Images are generated on **KUBB** (AI server), **not** on this VPS. ComfyUI is **never** at `localhost` or `127.0.0.1` from Felix’s perspective.
+
+## Canonical URL (use this)
+
+**`http://100.86.160.110:8188`** — KUBB over Tailscale (also in `workspace/docs/comfyui-workflow.md`).
+
+Do **not** use `http://localhost:8188`, `127.0.0.1`, or `host.docker.internal` unless Joshua explicitly says ComfyUI was moved to the VPS.
 
 ## Environment
 
-- `COMFYUI_BASE_URL` — e.g. `http://100.86.160.110:8188`
-- `COMFYUI_WORKFLOW_API` — absolute path to **Save (API Format)** JSON from ComfyUI on KUBB
+Set on the gateway host in `~/.openclaw/.env` (scripts load this automatically; you must **not** paste `.env` in chat):
 
-Never read `~/.openclaw/.env` in chat. Use process env only.
+- `COMFYUI_BASE_URL=http://100.86.160.110:8188`
+- `COMFYUI_WORKFLOW_API=/home/deploy/.openclaw/comfyui-workflow-api.json`  
+  If missing, run: `bash ~/AINetwork/setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork`
+
+## How to run (always use scripts)
+
+Do **not** hand-write `curl` to ComfyUI. Do **not** open ComfyUI in the browser on localhost.
 
 Setup: repo `setup/ai-server/05-comfyui/README.md` and `workspace/docs/comfyui-workflow.md`.
 

@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Ping ComfyUI system_stats or root. Exit 0 if reachable."""
-import os
 import sys
 import urllib.error
 import urllib.request
 
+from comfyui_env import base_url, reject_localhost
+
 def main() -> int:
-    base = (os.environ.get("COMFYUI_BASE_URL") or "").rstrip("/")
-    if not base:
-        print("COMFYUI_BASE_URL not set", file=sys.stderr)
+    base = base_url()
+    try:
+        reject_localhost(base)
+    except ValueError as e:
+        print(str(e), file=sys.stderr)
         return 2
     for path in ("/system_stats", "/"):
         url = f"{base}{path}"

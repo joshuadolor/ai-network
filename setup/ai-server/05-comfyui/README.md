@@ -22,19 +22,29 @@ Replace the IP with `tailscale ip -4` on KUBB if it ever changes.
 sudo ufw allow in on tailscale0 to any port 8188 proto tcp
 ```
 
-## Export an API workflow (required for automation)
+## API workflow on OpenClaw VPS (required for Felix)
 
-1. Build a simple **text-to-image** graph in ComfyUI (checkpoint + CLIP encode + KSampler + VAE decode + Save Image).
-2. **Save (API Format)** → `~/comfyui-workflows/txt2img-api.json` on KUBB.
-3. Copy the same file to the OpenClaw VPS for Felix:
+**Missing file?** On the OpenClaw VPS:
 
 ```bash
-# From laptop, example:
-scp KUBB:~/comfyui-workflows/txt2img-api.json deploy@OPENCLAW_VPS:~/.openclaw/comfyui-workflow-api.json
+cd ~/AINetwork && git pull
+bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork
+# creates ~/.openclaw/comfyui-workflow-api.json from repo starter template
+```
+
+Or full sync: `bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork --restart`
+
+### Replace with your real graph (recommended after first test)
+
+1. Build a working **text-to-image** graph in ComfyUI on KUBB.
+2. **Save (API Format)** → copy to the VPS:
+
+```bash
+scp KUBB:~/path/to/your-api.json deploy@OPENCLAW_VPS:~/.openclaw/comfyui-workflow-api.json
 chmod 600 ~/.openclaw/comfyui-workflow-api.json
 ```
 
-4. Set on OpenClaw VPS `~/.openclaw/.env`:
+3. `~/.openclaw/.env` should include:
 
 ```bash
 COMFYUI_BASE_URL=http://100.86.160.110:8188
@@ -43,10 +53,24 @@ COMFYUI_WORKFLOW_API=/home/deploy/.openclaw/comfyui-workflow-api.json
 
 5. Optional for Open WebUI: paste the same JSON in **Admin → Settings → Images** or set `COMFYUI_WORKFLOW` in `open-webui.env` (see [../../vps-apps/02-open-webui/README.md](../../vps-apps/02-open-webui/README.md)).
 
+## Why Felix must not use localhost
+
+ComfyUI runs on **KUBB**. The OpenClaw VPS only has Tailscale access. If Felix uses `http://127.0.0.1:8188`, nothing is listening there.
+
+Felix is told **not** to read `~/.openclaw/.env` in chat (secrets). Without reading `workspace/docs/comfyui-workflow.md` or using the skill scripts, models often default to “ComfyUI = localhost:8188” from training data. **Fix:** always `exec` the skill scripts (they load `.env` and reject localhost).
+
+Ensure the **gateway** loads `.env` on restart:
+
+```bash
+set -a && source ~/.openclaw/.env && set +a
+openclaw gateway restart
+```
+
+Or add `EnvironmentFile=/home/deploy/.openclaw/.env` to the `openclaw-gateway` systemd user unit if your install supports it.
+
 ## Test generation (OpenClaw VPS)
 
 ```bash
-source ~/.openclaw/.env
 python3 ~/AINetwork/setup/vps-openclaw/skills/local-image-gen/scripts/comfyui_health.py
 python3 ~/AINetwork/setup/vps-openclaw/skills/local-image-gen/scripts/comfyui_generate.py \
   --prompt "a grey tabby cat CEO, minimalist poster" \

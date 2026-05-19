@@ -22,6 +22,7 @@ Enable in gateway config via `--config-merge` (see `openclaw.json.example` → `
 | [local-image-gen](local-image-gen/) | ComfyUI health + generate | `COMFYUI_BASE_URL`, `COMFYUI_WORKFLOW_API` |
 | [crypto-watch](crypto-watch/) | Read-only prices | Optional `CRYPTO_WATCH_SYMBOLS` |
 | [proactive-ops](proactive-ops/) | Heartbeats, cron | Discord + cron |
+| [ralph-loop](ralph-loop/) | **5-min progress pings** on long tasks | `ralph_status.py`; optional `RALPH_PING_INTERVAL_SEC` |
 
 ## ClawHub (free) — Chinese docs often recommend
 
