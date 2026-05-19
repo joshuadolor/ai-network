@@ -209,7 +209,8 @@ echo "Reference copies (cron + Tina paste prompts):"
 copy_file "$REF_SRC/javiconsu-felix-adapted/CRON-EXAMPLES.md" "$OC/workspace/reference/CRON-EXAMPLES.md"
 copy_file "$REF_SRC/tina-huang-openclaw-prompts/FELIX-PASTE-PROMPTS.md" "$OC/workspace/reference/FELIX-PASTE-PROMPTS.md"
 copy_file "$REF_SRC/lead-site-trial-workflow.md" "$OC/workspace/reference/lead-site-trial-workflow.md"
-run mkdir -p "$OC/workspace/docs/leads"
+copy_file "$WS_SRC/docs/comfyui-workflow.md" "$OC/workspace/docs/comfyui-workflow.md"
+run mkdir -p "$OC/workspace/docs/leads" "$OC/workspace/docs/images"
 
 # --- .env ---
 if [[ "$ENV_INIT" -eq 1 ]]; then

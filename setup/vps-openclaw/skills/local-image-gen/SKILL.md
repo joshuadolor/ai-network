@@ -1,39 +1,49 @@
 ---
 name: local-image-gen
-description: Request images from Joshua's local ComfyUI or diffusion stack on KUBB (Tailscale). Use for thumbnails, concepts, social drafts — not production deploys without approval.
+description: Request images from ComfyUI on KUBB (Tailscale). Health check and generate via API workflow. Drafts only until Joshua approves publish.
 user-invocable: true
 ---
 
-# Local image generation (KUBB)
+# Local image generation (KUBB ComfyUI)
 
-Images are generated on the **AI server**, not the OpenClaw VPS. The VPS only triggers or checks status over Tailscale.
+Images are generated on the **AI server** (`100.86.160.110:8188` over Tailscale — confirm with Joshua if IP changed). The OpenClaw VPS triggers ComfyUI; it does not run GPU work locally.
 
 ## Environment
 
-- `COMFYUI_BASE_URL` — e.g. `http://100.x.x.x:8188` (KUBB Tailscale IP, ComfyUI default port).
-- Optional: `COMFYUI_WORKFLOW` — name of a saved API workflow on the server (Joshua configures on KUBB).
+- `COMFYUI_BASE_URL` — e.g. `http://100.86.160.110:8188`
+- `COMFYUI_WORKFLOW_API` — absolute path to **Save (API Format)** JSON from ComfyUI on KUBB
 
 Never read `~/.openclaw/.env` in chat. Use process env only.
+
+Setup: repo `setup/ai-server/05-comfyui/README.md` and `workspace/docs/comfyui-workflow.md`.
 
 ## Health check (exec)
 
     python3 {baseDir}/scripts/comfyui_health.py
 
-If unreachable, tell Joshua: ComfyUI must be running on KUBB and `COMFYUI_BASE_URL` set in gateway `.env`.
+## Generate image (exec)
+
+Requires `COMFYUI_WORKFLOW_API` file on the VPS.
+
+    python3 {baseDir}/scripts/comfyui_generate.py \
+      --prompt "description here" \
+      --out workspace/docs/images/YYYY-MM-DD-slug.png
+
+Optional negative prompt: `--negative "blurry, watermark"`.
+
+On success, script prints JSON with `path`. Attach or upload to Discord if size allows; always give the path in the **completion report**.
 
 ## Workflow
 
 1. Confirm **prompt**, **aspect ratio**, and **purpose** (draft vs publish).
-2. Run health check.
-3. If Joshua has a **fixed API workflow** on ComfyUI, follow the prompt template documented in `workspace/docs/comfyui-workflow.md` (create that file on first successful setup).
-4. Otherwise: guide Joshua to export a simple text-to-image API workflow on KUBB, or use browser on a local-only UI if Tailscale exposes it (rare).
-5. Deliver: attach image in Discord if size allows, or save under `workspace/docs/images/` and give the path.
-6. **Publishing** social posts or client assets requires explicit **approved** from Joshua.
+2. Run **health check**; if fail, stop and report (ComfyUI down or wrong URL).
+3. Run **comfyui_generate.py** with a clear `--out` under `workspace/docs/images/`.
+4. **Publishing** social posts or client assets requires explicit **approved** from Joshua.
 
 ## Fallback
 
-If ComfyUI is down but **Ollama** has a vision/generation model Joshua enabled, say so and do not fake an image — offer text-only concept or wait.
+If `COMFYUI_WORKFLOW_API` is missing, tell Joshua to export API workflow from ComfyUI (see `05-comfyui/README.md`) — do not fake an image.
 
-## Setup reference
+## Open WebUI
 
-Repo: `setup/ai-server/05-image-video/README.md` (SDXL / diffusers on KUBB).
+Joshua can also generate images in the browser via Open WebUI on the apps VPS (same `COMFYUI_BASE_URL`).

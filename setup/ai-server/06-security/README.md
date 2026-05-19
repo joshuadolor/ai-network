@@ -8,6 +8,7 @@
 
 - [ ] **Do not** port-forward Ollama (`11434`) from your home router to the public internet.
 - [ ] Set `OLLAMA_HOST=0.0.0.0:11434` only together with a sane plan (Tailscale + optional UFW on `tailscale0`). See [../03-ollama/README.md](../03-ollama/README.md).
+- [ ] ComfyUI `--listen` on tailnet only; allow **8188/tcp on `tailscale0`** if UFW is on. Do not expose **8188** on the public WAN. See [../05-comfyui/README.md](../05-comfyui/README.md).
 - [ ] `sudo ufw status` reviewed if UFW is enabled.
 - [ ] SSH: prefer keys; disable password auth when you are comfortable (`/etc/ssh/sshd_config`).
 - [ ] Avoid loading **72B + 33B** at the same time unless you know RAM headroom (`ollama ps`).

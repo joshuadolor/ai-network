@@ -11,8 +11,9 @@ Everything here runs on the **physical workstation** where you install **Ubuntu*
 | 3 | [02-base-system](02-base-system/README.md) | Updates, `git`, bootstrap script |
 | 4 | [03-ollama](03-ollama/README.md) | Ollama install, `OLLAMA_HOST`, GPU |
 | 5 | [04-models](04-models/README.md) | Model pulls |
-| 6 | (optional) [05-image-video](05-image-video/README.md) | SDXL / AnimateDiff in a venv |
-| 7 | [06-security](06-security/README.md) | UFW, SSH, Ollama not on the public WAN |
+| 6 | [05-comfyui](05-comfyui/README.md) | ComfyUI on `:8188` for Open WebUI + OpenClaw (Tailscale) |
+| 7 | (optional) [05-image-video](05-image-video/README.md) | SDXL / AnimateDiff Python venv (alternative to ComfyUI) |
+| 8 | [06-security](06-security/README.md) | UFW, SSH, Ollama/ComfyUI not on the public WAN |
 
 **Networking:** when this box is online and you are ready to pair it with the VPSes, follow **[../network-tailscale/README.md](../network-tailscale/README.md)** on **all** machines (AI server + apps VPS + OpenClaw VPS).
 

@@ -19,7 +19,7 @@ Enable in gateway config via `--config-merge` (see `openclaw.json.example` → `
 | [ui-ux-build](ui-ux-build/) | Build static site from lead pack | `workspace/docs/leads/` |
 | [site-preview-ngrok](site-preview-ngrok/) | Share preview URL with Joshua | `NGROK_AUTHTOKEN`, `ngrok` binary |
 | [ui-ux-review](ui-ux-review/) | UX critique on URLs | Browser |
-| [local-image-gen](local-image-gen/) | Images via KUBB ComfyUI | `COMFYUI_BASE_URL` |
+| [local-image-gen](local-image-gen/) | ComfyUI health + generate | `COMFYUI_BASE_URL`, `COMFYUI_WORKFLOW_API` |
 | [crypto-watch](crypto-watch/) | Read-only prices | Optional `CRYPTO_WATCH_SYMBOLS` |
 | [proactive-ops](proactive-ops/) | Heartbeats, cron | Discord + cron |
 

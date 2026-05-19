@@ -7,7 +7,7 @@
 - **cn-html-design** — 高颜值 landing HTML; install ClawHub `steipete/frontend-design` on VPS when possible.
 - **site-preview-ngrok** — `site_preview.py --dir …/site`; needs `NGROK_AUTHTOKEN`.
 - **deep-research** — multi-query synthesis; save to `workspace/docs/research-*.md`.
-- **local-image-gen** — `python3 {baseDir}/scripts/comfyui_health.py`; needs `COMFYUI_BASE_URL`.
+- **local-image-gen** — `comfyui_health.py` / `comfyui_generate.py`; `COMFYUI_BASE_URL` + `COMFYUI_WORKFLOW_API` (see `docs/comfyui-workflow.md`).
 - **crypto-watch** — `python3 {baseDir}/scripts/watch.py`; read-only; optional `CRYPTO_WATCH_SYMBOLS`.
 - **ui-ux-review** — structured UX critique; browser for URLs.
 - **proactive-ops** — cron + heartbeat discipline; see HEARTBEAT.md.

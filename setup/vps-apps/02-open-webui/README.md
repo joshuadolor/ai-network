@@ -14,6 +14,7 @@ Docker container on the **VPS** uses your **KUBB** Ollama over Tailscale (same i
 - [ ] Docker installed on this VPS ([../01-docker/README.md](../01-docker/README.md)).
 - [ ] Tailscale on **VPS and AI server** ([../../network-tailscale/README.md](../../network-tailscale/README.md)).
 - [ ] `curl` from VPS to `http://<KUBB_TAILSCALE_IP>:11434/api/tags` works.
+- [ ] (optional) `curl` from VPS to `http://<KUBB_TAILSCALE_IP>:8188/system_stats` works (ComfyUI on KUBB).
 
 ## Configure and run
 
@@ -21,7 +22,7 @@ Docker container on the **VPS** uses your **KUBB** Ollama over Tailscale (same i
 
 ```bash
 cp open-webui.env.example open-webui.env
-nano open-webui.env   # set OLLAMA_BASE_URL to http://<AI_SERVER_TAILSCALE_IP>:11434
+nano open-webui.env   # OLLAMA_BASE_URL + COMFYUI_BASE_URL (see open-webui.env.example)
 ```
 
 2. Run the helper script **on the VPS** (copy this folder or the whole `setup` directory to the VPS):
@@ -54,16 +55,32 @@ The **`-v open-webui:/app/backend/data`** volume is required upstream so the dat
 
 The **first account** created in Open WebUI is the admin — create yours, then add your wife under **Admin → Users**.
 
+## ComfyUI image generation (KUBB)
+
+ComfyUI runs on the **AI server**, not this VPS. Example verified Tailscale URL:
+
+`http://100.86.160.110:8188/`
+
+1. Set in `open-webui.env` (from `open-webui.env.example`):
+   - `ENABLE_IMAGE_GENERATION=true`
+   - `COMFYUI_BASE_URL=http://<KUBB_TAILSCALE_IP>:8188/`
+2. Restart: `./run-open-webui.sh`
+3. In Open WebUI: **Admin → Settings → Images** — confirm ComfyUI connection (refresh icon).
+4. Export a **Save (API Format)** workflow in ComfyUI on KUBB; paste in admin UI or set `COMFYUI_WORKFLOW` in env.
+
+Details: [../../ai-server/05-comfyui/README.md](../../ai-server/05-comfyui/README.md) · [Open WebUI ComfyUI docs](https://docs.openwebui.com/features/image-generation/comfyui/).
+
 ## Verification
 
 - [ ] Web UI loads.
 - [ ] Chat completes using a model that exists on the **AI server** (`ollama list` there).
+- [ ] (optional) Image generation produces an image via ComfyUI.
 
 ## Files in this folder
 
 | File | Purpose |
 |------|---------|
-| `open-webui.env.example` | Template for `OLLAMA_BASE_URL` |
+| `open-webui.env.example` | `OLLAMA_BASE_URL` + ComfyUI vars |
 | `run-open-webui.sh` | Starts container with env file |
 
 ## Next
