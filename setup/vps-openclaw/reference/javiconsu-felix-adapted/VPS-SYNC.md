@@ -43,7 +43,7 @@ bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork \
 
 Edit `~/.openclaw/openclaw.json` — merge from `setup/vps-openclaw/openclaw.json.example`:
 
-- `agents.defaults.model.primary` → `ollama/qwen2.5:7b` with fallbacks 32b, 72b
+- `agents.defaults.model.primary` → `ollama/qwen3.6:latest` (fallbacks: 7b, 32b, 72b)
 - `agents.defaults.timeoutSeconds` → `600`
 - compaction + contextPruning + contextLimits (already in example)
 - `tools.alsoAllow` → includes `browser`

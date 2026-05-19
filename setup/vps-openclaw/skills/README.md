@@ -21,6 +21,7 @@ Enable in gateway config via `--config-merge` (see `openclaw.json.example` → `
 | [ui-ux-review](ui-ux-review/) | UX critique on URLs | Browser |
 | [local-image-gen](local-image-gen/) | ComfyUI health + generate | Scripts from [ai-server/05-image-video/local](../../ai-server/05-image-video/local/); `COMFYUI_BASE_URL` |
 | [crypto-watch](crypto-watch/) | Read-only prices | Optional `CRYPTO_WATCH_SYMBOLS` |
+| [goal](goal/) | `/goal` create/update/done/list workflow | `goal_tracker.py`; stores in `workspace/docs/goals/` |
 | [proactive-ops](proactive-ops/) | Heartbeats, cron | Discord + cron |
 | [ralph-loop](ralph-loop/) | **5-min progress pings** on long tasks | `ralph_status.py`; optional `RALPH_PING_INTERVAL_SEC` |
 

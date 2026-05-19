@@ -3,10 +3,11 @@
     "defaults": {
       "workspace": "/home/deploy/.openclaw/workspace",
       "model": {
-        "primary": "ollama/qwen2.5:32b",
-        "fallbacks": ["ollama/qwen2.5:72b", "ollama/qwen2.5:7b"]
+        "primary": "ollama/qwen3.6:latest",
+        "fallbacks": ["ollama/qwen2.5:7b", "ollama/qwen2.5:32b", "ollama/qwen2.5:72b"]
       },
       "models": {
+        "ollama/qwen3.6:latest": { "alias": "default" },
         "ollama/qwen2.5:72b": { "alias": "heavy" },
         "ollama/qwen2.5:32b": { "alias": "mid" },
         "ollama/qwen2.5:7b": { "alias": "fast" }
@@ -20,7 +21,7 @@
         "truncateAfterCompaction": true,
         "maxActiveTranscriptBytes": "20mb",
         "notifyUser": true,
-        "model": "ollama/qwen2.5:32b"
+        "model": "ollama/qwen3.6:latest"
       },
       "contextLimits": {
         "toolResultMaxChars": 12000,
@@ -122,6 +123,16 @@
         "api": "ollama",
         "apiKey": "ollama-local",
         "models": [
+          {
+            "id": "qwen3.6:latest",
+            "name": "qwen3.6:latest",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "compat": { "supportsTools": true, "supportsUsageInStreaming": true }
+          },
           {
             "id": "qwen2.5:7b",
             "name": "qwen2.5:7b",
@@ -234,6 +245,7 @@
       "site-preview-ngrok": { "enabled": true },
       "local-image-gen": { "enabled": true },
       "crypto-watch": { "enabled": true },
+      "goal": { "enabled": true },
       "ui-ux-review": { "enabled": true },
       "proactive-ops": { "enabled": true },
       "ralph-loop": { "enabled": true }

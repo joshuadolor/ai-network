@@ -17,7 +17,7 @@ Also use for **lead-site-pipeline** phase 1: local businesses **without a real w
 1. **Clarify** (one short message if needed): topic, depth, audience, deadline.
 2. **Search** — use gateway **web search** (DuckDuckGo). Run **3–6 distinct queries** (synonyms, competitors, "2025 2026", site-specific if useful).
 3. **Browser** — only if search is thin or a primary source must be read (paywalls, docs). Snapshot → extract → cite URL.
-4. **Synthesize** — for long reports, ask Joshua to use **heavy** (`ollama/qwen2.5:72b`) or switch model before the final write-up.
+4. **Synthesize** — default **qwen3.6:latest** is fine; for extra depth ask Joshua to use **heavy** (`ollama/qwen2.5:72b`) before the final write-up.
 5. **Deliver** in Discord:
    - **Executive summary** (3–5 bullets)
    - **Findings** (grouped headings)
@@ -55,6 +55,6 @@ When Joshua runs **lead-site-pipeline** or asks for leads:
 
 | Task | Model |
 |------|--------|
-| Quick scan | `ollama/qwen2.5:7b` or default 32b |
-| Final synthesis / strategy | `heavy` / 72b |
-| Lead pack (5+ businesses) | `heavy` recommended |
+| Quick scan | `ollama/qwen2.5:7b` or default **qwen3.6:latest** |
+| Final synthesis / strategy | default **qwen3.6:latest** or `heavy` / 72b |
+| Lead pack (5+ businesses) | default or `heavy` |

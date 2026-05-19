@@ -38,4 +38,6 @@ OpenClaw's **LLM calls** go to **your Ollama** on the AI server through Tailscal
 
 For the DLR multi-agent setup, see [06-agents-teams](06-agents-teams/README.md) — all agents use local models, no external API keys required.
 
+**Default Felix model:** `ollama/qwen3.6:latest` on KUBB (`openclaw.json.example`). Pull on AI server: `ollama pull qwen3.6:latest`, then `update-vps-openclaw.sh --config-merge --restart`.
+
 Doc hygiene + Context7: [../DOCUMENTATION-SOURCES.md](../DOCUMENTATION-SOURCES.md)

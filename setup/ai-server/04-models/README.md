@@ -12,7 +12,8 @@ Model names and sizes change — browse [ollama.com/library](https://ollama.com/
 ## Order suggested
 
 1. Small test model (already done when you tested Ollama) — proves Ollama works.
-2. **Fast chat:** `qwen2.5:7b` (aligns with family used for 72B).
+2. **Felix / OpenClaw default:** `qwen3.6:latest` (MoE — pull before setting gateway primary).
+3. **Fast chat / cron:** `qwen2.5:7b` (light jobs on the OpenClaw VPS).
 3. **Embeddings:** `nomic-embed-text` (small).
 4. **Coding:** `deepseek-coder:33b` (large).
 5. **Main chat:** `qwen2.5:72b` (largest — do when GPU/RAM path is stable).
@@ -21,6 +22,7 @@ Model names and sizes change — browse [ollama.com/library](https://ollama.com/
 ## Commands (copy one at a time)
 
 ```bash
+ollama pull qwen3.6:latest
 ollama pull qwen2.5:7b
 ollama pull nomic-embed-text
 ollama pull deepseek-coder:33b

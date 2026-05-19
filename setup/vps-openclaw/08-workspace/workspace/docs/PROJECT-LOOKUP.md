@@ -18,7 +18,7 @@ If `~/AINetwork` is missing: tell Joshua to `git clone` the repo on the VPS.
 1. **`workspace/docs/PROJECT-LOOKUP.md`** (this file)
 2. **`workspace/skills/<name>/SKILL.md`** — task-specific procedures
 3. **`workspace/reference/`** — cron examples, lead-site trial, Tina prompts
-4. **`workspace/docs/`** — research, leads, images, comfyui-workflow
+4. **`workspace/docs/`** — research, leads, images, goals, comfyui-workflow
 5. **`memory_search`** + `MEMORY.md` + `memory/YYYY-MM-DD.md`
 6. **`~/AINetwork/setup/`** — full tree (grep/find below)
 7. Web search — only after the repo has no answer
@@ -52,6 +52,7 @@ Replace `KEYWORD` with: `comfyui`, `ngrok`, `cron`, `discord`, `ollama`, `lead-s
 | **Open WebUI (apps VPS)** | `setup/vps-apps/02-open-webui/` |
 | **Tailscale** | `setup/network-tailscale/` |
 | **Lead → site trial** | `setup/vps-openclaw/reference/lead-site-trial-workflow.md` |
+| **Goal workflow (`/goal`)** | `setup/vps-openclaw/skills/goal/` |
 | **Multi-agent team** | `setup/vps-openclaw/06-agents-teams/` |
 | **Cron examples** | `setup/vps-openclaw/reference/javiconsu-felix-adapted/CRON-EXAMPLES.md` |
 | **Architecture overview** | `~/AINetwork/README.md` |
@@ -79,6 +80,7 @@ Replace `KEYWORD` with: `comfyui`, `ngrok`, `cron`, `discord`, `ollama`, `lead-s
 | Discord / token | `05-discord-channel/README.md`, `.env` (do not leak) |
 | Ollama IP / model | `openclaw.json` `models.providers.ollama`, `03-ollama/README.md` |
 | ngrok preview | skill **site-preview-ngrok**, `lead-site-trial-workflow.md` |
+| `/goal` not tracked | skill **goal** + `workspace/docs/goals/goals.json` |
 | No updates on long task | skill **ralph-loop** — ping every 5 min |
 | Email | skill **hostinger-email** |
 

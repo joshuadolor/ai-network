@@ -10,6 +10,8 @@
 - **deep-research** — multi-query synthesis; save to `workspace/docs/research-*.md`.
 - **local-image-gen** — canonical: `~/AINetwork/setup/ai-server/05-image-video/local/`; `comfyui_generate.py "<prompt>" --output … --json` (see `docs/comfyui-workflow.md`).
 - **crypto-watch** — `python3 {baseDir}/scripts/watch.py`; read-only; optional `CRYPTO_WATCH_SYMBOLS`.
+- **goal** — `goal_tracker.py start|update|done|list` for Discord `/goal ...`; writes under `workspace/docs/goals/`.
+  - Strict policy: active goals do not stop except `done` or `blocked` (see AGENTS.md).
 - **ui-ux-review** — structured UX critique; browser for URLs.
 - **proactive-ops** — cron + heartbeat discipline; see HEARTBEAT.md.
 - **ralph-loop** — `ralph_status.py start|should-ping|record-ping|done`; Discord ping every 5 min on long tasks.

@@ -37,7 +37,7 @@ Pull these on the AI server before you start ([../../ai-server/04-models/README.
 
 | Agent | Recommended model | Why |
 |-------|------------------|-----|
-| `main` | `qwen2.5:72b` | Strong reasoning for general tasks |
+| `main` | `qwen3.6:latest` | Default Felix / CEO (OpenClaw primary) |
 | `stoic-social` | `qwen2.5:7b` | Fast, cheap for content drafts |
 | `got-social` | `qwen2.5:7b` | Fast, cheap for content drafts |
 | `ats-team` | `deepseek-coder:33b` | Best local coding model you have |
@@ -138,8 +138,8 @@ cat > /tmp/dlr-agents.patch.json5 << 'JSON5'
   agents: {
     defaults: {
       model: {
-        primary: "ollama/qwen2.5:72b",
-        fallbacks: ["ollama/qwen2.5:7b"]
+        primary: "ollama/qwen3.6:latest",
+        fallbacks: ["ollama/qwen2.5:7b", "ollama/qwen2.5:72b"]
       },
       memorySearch: {
         provider: "ollama"
@@ -159,7 +159,7 @@ cat > /tmp/dlr-agents.patch.json5 << 'JSON5'
         workspace: "~/.openclaw/workspace",
         agentDir: "~/.openclaw/agents/main/agent",
         identity: { name: "Felix", emoji: "🐈" },
-        model: { primary: "ollama/qwen2.5:72b", fallbacks: ["ollama/qwen2.5:7b"] }
+        model: { primary: "ollama/qwen3.6:latest", fallbacks: ["ollama/qwen2.5:7b", "ollama/qwen2.5:72b"] }
       },
 
       // ── Marcus — stoic black cat, Stoic Guy content ──────────────────────

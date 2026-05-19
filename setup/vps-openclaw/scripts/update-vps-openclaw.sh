@@ -236,7 +236,7 @@ copy_file "$REF_SRC/tina-huang-openclaw-prompts/FELIX-PASTE-PROMPTS.md" "$OC/wor
 copy_file "$REF_SRC/lead-site-trial-workflow.md" "$OC/workspace/reference/lead-site-trial-workflow.md"
 copy_file "$WS_SRC/docs/comfyui-workflow.md" "$OC/workspace/docs/comfyui-workflow.md"
 copy_file "$WS_SRC/docs/PROJECT-LOOKUP.md" "$OC/workspace/docs/PROJECT-LOOKUP.md"
-run mkdir -p "$OC/workspace/docs/leads" "$OC/workspace/docs/images"
+run mkdir -p "$OC/workspace/docs/leads" "$OC/workspace/docs/images" "$OC/workspace/docs/goals"
 
 # --- ComfyUI API workflow (Felix image gen) ---
 echo ""
