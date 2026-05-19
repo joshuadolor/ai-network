@@ -63,6 +63,18 @@ Or set `COMFYUI_WORKFLOW` in `.env` to that path.
 5. `comfyui_generate.py` with `--json` → read `path` in output → share in Discord + completion report.
 6. Do **not** `curl` ComfyUI by hand. Do **not** open ComfyUI in browser on localhost.
 
+## Proceed behavior (strict)
+
+If Joshua says **"do it" / "proceed" / "go"**:
+
+- Run the command immediately (do not restate the same command repeatedly).
+- If a precheck is needed, run it once then immediately run generate.
+- If command fails, show the exact error and next fix.
+
+Correct generate path includes `scripts/`:
+
+`python3 ~/.openclaw/workspace/skills/local-image-gen/scripts/comfyui_generate.py ...`
+
 ## If something is missing
 
 Search repo: `grep -ri comfyui ~/AINetwork/setup/ai-server/05-image-video/local`
