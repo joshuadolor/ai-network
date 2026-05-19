@@ -58,9 +58,22 @@ python3 comfyui_generate.py "your prompt"
 | `COMFYUI_CFG` | `7.0` | CFG scale |
 | `COMFYUI_TIMEOUT` | `600` | Wait timeout (seconds) |
 
-## Agent (OpenClaw)
+## Agent (OpenClaw / Felix)
 
-On the OpenClaw VPS, use skill scripts (`comfyui_generate.py` uses `COMFYUI_WORKFLOW_API`).  
-`update-vps-openclaw.sh` copies `comfyui_client.py` and `comfyui_list_models.py` into the skill.
+**This folder is canonical.** Felix must read this README when doing image work — do not guess URLs or CLI flags.
 
-See `setup/vps-openclaw/skills/local-image-gen/SKILL.md`.
+On the OpenClaw VPS:
+
+1. Repo path: `~/AINetwork/setup/ai-server/05-image-video/local/`
+2. After `git pull`, run `bash setup/vps-openclaw/scripts/update-vps-openclaw.sh ~/AINetwork` — copies these scripts into `~/.openclaw/workspace/skills/local-image-gen/scripts/` (keeps VPS-only `comfyui_env.py`).
+3. Skill: `setup/vps-openclaw/skills/local-image-gen/SKILL.md`
+4. Workspace cheat sheet: `~/.openclaw/workspace/docs/comfyui-workflow.md`
+
+**Felix command shape:** positional prompt, not `--prompt`:
+
+```bash
+python3 ~/.openclaw/workspace/skills/local-image-gen/scripts/comfyui_generate.py \
+  "description" --output ~/.openclaw/workspace/docs/images/out.png --json
+```
+
+Use **ralph-loop** for long image batches. Never `localhost:8188` from the VPS.

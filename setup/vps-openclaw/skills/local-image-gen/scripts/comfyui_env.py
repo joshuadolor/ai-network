@@ -33,7 +33,9 @@ def load_dotenv_comfyui() -> None:
 
 def base_url() -> str:
     load_dotenv_comfyui()
-    return (os.environ.get("COMFYUI_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
+    url = (os.environ.get("COMFYUI_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
+    reject_localhost(url)
+    return url
 
 
 def workflow_api_path() -> Path | None:

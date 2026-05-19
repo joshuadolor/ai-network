@@ -70,12 +70,18 @@ Or add `EnvironmentFile=/home/deploy/.openclaw/.env` to the `openclaw-gateway` s
 
 ## Test generation (OpenClaw VPS)
 
+Canonical tools: [../05-image-video/local/README.md](../05-image-video/local/README.md)
+
 ```bash
-python3 ~/AINetwork/setup/vps-openclaw/skills/local-image-gen/scripts/comfyui_health.py
-python3 ~/AINetwork/setup/vps-openclaw/skills/local-image-gen/scripts/comfyui_generate.py \
-  --prompt "a grey tabby cat CEO, minimalist poster" \
-  --out /tmp/test-comfyui.png
+cd ~/AINetwork/setup/ai-server/05-image-video/local
+export COMFYUI_BASE_URL=http://100.86.160.110:8188   # or: source ~/.openclaw/.env
+
+python3 comfyui_health.py
+python3 comfyui_list_models.py
+python3 comfyui_generate.py "a grey tabby cat CEO, minimalist poster" -o /tmp/test.png --json
 ```
+
+After `update-vps-openclaw.sh`, the same scripts live under `~/.openclaw/workspace/skills/local-image-gen/scripts/`.
 
 ## Upstream
 

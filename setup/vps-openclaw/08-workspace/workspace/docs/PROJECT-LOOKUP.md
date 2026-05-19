@@ -47,7 +47,7 @@ Replace `KEYWORD` with: `comfyui`, `ngrok`, `cron`, `discord`, `ollama`, `lead-s
 | **Apply repo → live** | `setup/vps-openclaw/scripts/update-vps-openclaw.sh` |
 | **Gateway config example** | `setup/vps-openclaw/openclaw.json.example` |
 | **Env template** | `setup/vps-openclaw/.env.example` |
-| **ComfyUI + KUBB** | `setup/ai-server/05-comfyui/` |
+| **ComfyUI + KUBB** | `setup/ai-server/05-comfyui/` · **image API tools** `setup/ai-server/05-image-video/local/` |
 | **Ollama on KUBB** | `setup/ai-server/03-ollama/` |
 | **Open WebUI (apps VPS)** | `setup/vps-apps/02-open-webui/` |
 | **Tailscale** | `setup/network-tailscale/` |
@@ -70,8 +70,11 @@ Replace `KEYWORD` with: `comfyui`, `ngrok`, `cron`, `discord`, `ollama`, `lead-s
 
 | Problem | Check |
 |---------|--------|
-| ComfyUI URL wrong (localhost) | `docs/comfyui-workflow.md`, skill **local-image-gen**, `05-comfyui/README.md` |
-| `comfyui-workflow-api.json` missing | `bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork` |
+| ComfyUI / image gen | **`setup/ai-server/05-image-video/local/README.md`** (canonical) |
+| ComfyUI URL wrong (localhost) | `docs/comfyui-workflow.md`, skill **local-image-gen** |
+| Checkpoint / generate errors | `comfyui_list_models.py`, `COMFYUI_CHECKPOINT` in `.env` |
+| `comfyui-workflow-api.json` (optional) | `install-comfyui-workflow.sh` — built-in graph often works without it |
+| Start ComfyUI on KUBB | `setup/ai-server/05-image-video/scripts/start_comfyui.sh` |
 | Cron not running | `CRON-EXAMPLES.md`, `scripts/recreate-daily-ai-cron.sh` |
 | Discord / token | `05-discord-channel/README.md`, `.env` (do not leak) |
 | Ollama IP / model | `openclaw.json` `models.providers.ollama`, `03-ollama/README.md` |

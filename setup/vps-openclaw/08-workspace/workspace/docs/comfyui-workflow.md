@@ -1,41 +1,53 @@
-# ComfyUI workflow (Felix / OpenClaw)
+# ComfyUI — Felix quick reference
 
-## Server
+**Full docs:** `~/AINetwork/setup/ai-server/05-image-video/local/README.md`
 
-- **KUBB Tailscale IP:** `100.86.160.110` (verify with `tailscale ip -4` on KUBB if this drifts)
-- **Base URL:** `http://100.86.160.110:8188`
-- **Health:** `curl -s http://100.86.160.110:8188/system_stats`
+## KUBB (not this VPS)
 
-## API workflow file on OpenClaw VPS
+| Item | Value |
+|------|--------|
+| Tailscale IP | `100.86.160.110` (verify on KUBB: `tailscale ip -4`) |
+| Base URL | `http://100.86.160.110:8188` |
+| Health | `python3 …/comfyui_health.py` (skill **local-image-gen**) |
 
-**Path:** `/home/deploy/.openclaw/comfyui-workflow-api.json`
-
-Created automatically if missing when you run:
-
-```bash
-bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork
-# or: update-vps-openclaw.sh (installs starter workflow when file absent)
-```
-
-Set in `~/.openclaw/.env` (install script appends this):
+## `~/.openclaw/.env`
 
 ```bash
 COMFYUI_BASE_URL=http://100.86.160.110:8188
-COMFYUI_WORKFLOW_API=/home/deploy/.openclaw/comfyui-workflow-api.json
+# optional:
+# COMFYUI_CHECKPOINT=your_model.safetensors
+# COMFYUI_WORKFLOW=/home/deploy/AINetwork/setup/ai-server/05-image-video/local/workflows/txt2img_api.json
 ```
 
-**Starter workflow** uses `sd_xl_base_1.0.safetensors` — edit `ckpt_name` in the JSON if KUBB uses a different checkpoint, or replace the whole file with **Save (API Format)** from ComfyUI on KUBB.
+Scripts load `.env` automatically (`comfyui_env.py`). Felix must **not** paste `.env` in Discord.
 
-## Generate (exec)
+## Generate (Felix — skill scripts)
 
 ```bash
-python3 {baseDir}/scripts/comfyui_generate.py \
-  --prompt "your description" \
-  --out workspace/docs/images/YYYY-MM-DD-slug.png
+cd ~/.openclaw/workspace/skills/local-image-gen/scripts
+
+python3 comfyui_health.py
+python3 comfyui_list_models.py
+
+python3 comfyui_generate.py \
+  "grey tabby cat CEO, poster style" \
+  --output ~/.openclaw/workspace/docs/images/test.png \
+  --json
 ```
 
-Save deliverables under `workspace/docs/images/`. Draft only until Joshua **approved** publish.
+**Built-in graph** — no `comfyui-workflow-api.json` required if checkpoints exist on KUBB.
+
+Optional legacy file: `~/.openclaw/comfyui-workflow-api.json` from `install-comfyui-workflow.sh`.
+
+## Repo paths
+
+| What | Path |
+|------|------|
+| Canonical Python tools | `setup/ai-server/05-image-video/local/` |
+| Start ComfyUI on KUBB | `setup/ai-server/05-image-video/scripts/start_comfyui.sh` |
+| Reference API JSON | `setup/ai-server/05-image-video/local/workflows/txt2img_api.json` |
+| OpenClaw skill (VPS copy) | `workspace/skills/local-image-gen/` |
 
 ## Open WebUI
 
-Same ComfyUI URL in apps VPS `open-webui.env` — see repo `setup/vps-apps/02-open-webui/`.
+`setup/vps-apps/02-open-webui/open-webui.env.example` — same `COMFYUI_BASE_URL`.

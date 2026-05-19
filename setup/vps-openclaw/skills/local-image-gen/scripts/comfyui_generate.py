@@ -1,160 +1,147 @@
 #!/usr/bin/env python3
-"""Queue a ComfyUI workflow with a text prompt; download first output image."""
+"""
+Queue a txt2img job on ComfyUI and save the output image.
+
+Requires COMFYUI_BASE_URL (e.g. http://100.x.x.x:8188 over Tailscale).
+Optional: COMFYUI_CHECKPOINT, COMFYUI_WORKFLOW (path to API JSON on the machine running this script).
+"""
 from __future__ import annotations
 
 import argparse
 import json
 import os
-import random
 import sys
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
-import uuid
-from pathlib import Path
-from typing import Any
+from datetime import datetime, timezone
 
-from comfyui_env import base_url, reject_localhost, workflow_api_path
-
-
-def _base() -> str:
-    return base_url()
+from comfyui_client import (
+    build_txt2img_workflow,
+    download_image,
+    load_workflow_json,
+    queue_prompt,
+    random_seed,
+    resolve_checkpoint,
+    wait_for_images,
+)
 
 
-def _workflow_path() -> Path | None:
-    return workflow_api_path()
+DEFAULT_NEGATIVE = (
+    "blurry, low quality, distorted, watermark, text, logo, ugly, deformed"
+)
 
 
-def _load_workflow(path: Path) -> dict[str, Any]:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError("workflow JSON must be an object (API format)")
-    return data
+def _default_output_dir() -> str:
+    return os.environ.get(
+        "COMFYUI_OUTPUT_DIR",
+        os.path.join(os.getcwd(), "comfyui_outputs"),
+    )
 
 
-def _patch_workflow(
-    workflow: dict[str, Any], positive: str, negative: str | None
-) -> dict[str, Any]:
-    w = json.loads(json.dumps(workflow))
-    clips = [
-        (nid, n)
-        for nid, n in w.items()
+def _apply_prompt_to_workflow(workflow: dict, prompt: str, negative: str) -> dict:
+    """Best-effort: set text on first two CLIPTextEncode nodes."""
+    encoders = [
+        n for n in workflow.values()
         if isinstance(n, dict) and n.get("class_type") == "CLIPTextEncode"
     ]
-    if clips:
-        clips[0][1].setdefault("inputs", {})["text"] = positive
-        if negative and len(clips) > 1:
-            clips[1][1].setdefault("inputs", {})["text"] = negative
-    for _nid, node in w.items():
-        if not isinstance(node, dict):
-            continue
-        if node.get("class_type") == "KSampler":
-            inputs = node.setdefault("inputs", {})
-            if "seed" in inputs:
-                inputs["seed"] = random.randint(0, 2**32 - 1)
-    return w
-
-
-def _post_json(url: str, payload: dict) -> dict:
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url, data=body, headers={"Content-Type": "application/json"}, method="POST"
-    )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read().decode())
-
-
-def _get_json(url: str) -> dict:
-    with urllib.request.urlopen(url, timeout=60) as resp:
-        return json.loads(resp.read().decode())
-
-
-def _queue(workflow: dict, client_id: str, base: str) -> str:
-    out = _post_json(f"{base}/prompt", {"prompt": workflow, "client_id": client_id})
-    pid = out.get("prompt_id")
-    if not pid:
-        raise RuntimeError(f"no prompt_id in response: {out}")
-    return str(pid)
-
-
-def _wait_outputs(prompt_id: str, base: str, timeout: float = 600.0) -> list[dict]:
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        hist = _get_json(f"{base}/history/{prompt_id}")
-        entry = hist.get(prompt_id) or {}
-        status = entry.get("status", {})
-        if status.get("completed"):
-            outputs = entry.get("outputs", {})
-            images: list[dict] = []
-            for node_out in outputs.values():
-                for img in node_out.get("images", []):
-                    images.append(img)
-            if images:
-                return images
-            raise RuntimeError("completed but no images in history")
-        if status.get("status_str") == "error":
-            raise RuntimeError(f"ComfyUI error: {entry}")
-        time.sleep(2)
-    raise TimeoutError(f"timed out waiting for prompt {prompt_id}")
-
-
-def _download_image(meta: dict, base: str, dest: Path) -> None:
-    q = urllib.parse.urlencode(
-        {
-            "filename": meta["filename"],
-            "subfolder": meta.get("subfolder", ""),
-            "type": meta.get("type", "output"),
-        }
-    )
-    url = f"{base}/view?{q}"
-    with urllib.request.urlopen(url, timeout=120) as resp:
-        dest.write_bytes(resp.read())
+    if len(encoders) >= 1:
+        encoders[0].setdefault("inputs", {})["text"] = prompt
+    if len(encoders) >= 2:
+        encoders[1].setdefault("inputs", {})["text"] = negative
+    return workflow
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="ComfyUI txt2img via API workflow")
-    parser.add_argument("--prompt", required=True, help="Positive prompt")
-    parser.add_argument("--negative", default="", help="Negative prompt")
-    parser.add_argument("--out", type=Path, required=True, help="Output image path")
-    parser.add_argument("--workflow", type=Path, help="Override COMFYUI_WORKFLOW_API")
+    parser = argparse.ArgumentParser(description="Generate an image via ComfyUI API")
+    parser.add_argument("prompt", help="Positive prompt")
+    parser.add_argument(
+        "--negative", "-n",
+        default=os.environ.get("COMFYUI_NEGATIVE_PROMPT", DEFAULT_NEGATIVE),
+        help="Negative prompt",
+    )
+    parser.add_argument("--checkpoint", "-c", help="Checkpoint filename (see comfyui_list_models.py)")
+    parser.add_argument("--seed", type=int, help="RNG seed (default: random)")
+    parser.add_argument("--width", "-W", type=int, default=int(os.environ.get("COMFYUI_WIDTH", "1024")))
+    parser.add_argument("--height", "-H", type=int, default=int(os.environ.get("COMFYUI_HEIGHT", "1024")))
+    parser.add_argument("--steps", type=int, default=int(os.environ.get("COMFYUI_STEPS", "20")))
+    parser.add_argument("--cfg", type=float, default=float(os.environ.get("COMFYUI_CFG", "7.0")))
+    parser.add_argument(
+        "--workflow", "-w",
+        help="Path to exported API workflow JSON (overrides built-in graph)",
+    )
+    parser.add_argument(
+        "--output", "-o",
+        help="Output image path (default: COMFYUI_OUTPUT_DIR/comfyui_<timestamp>.png)",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=int(os.environ.get("COMFYUI_TIMEOUT", "600")),
+        help="Max seconds to wait for generation",
+    )
+    parser.add_argument("--json", action="store_true", help="Print result metadata as JSON")
     args = parser.parse_args()
 
-    base = _base()
     try:
-        reject_localhost(base)
-    except ValueError as e:
-        print(json.dumps({"ok": False, "error": str(e)}), file=sys.stderr)
+        checkpoint = resolve_checkpoint(args.checkpoint)
+    except RuntimeError as e:
+        print(e, file=sys.stderr)
         return 2
 
-    wf_path = args.workflow or _workflow_path()
-    if not wf_path:
-        print(
-            json.dumps(
-                {
-                    "ok": False,
-                    "error": "Missing ~/.openclaw/comfyui-workflow-api.json — run: "
-                    "bash setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork",
-                }
-            ),
-            file=sys.stderr,
+    seed = args.seed if args.seed is not None else random_seed()
+
+    workflow_path = args.workflow or os.environ.get("COMFYUI_WORKFLOW")
+    if workflow_path:
+        try:
+            workflow = load_workflow_json(workflow_path)
+            workflow = _apply_prompt_to_workflow(workflow, args.prompt, args.negative)
+        except (OSError, ValueError, json.JSONDecodeError) as e:
+            print(f"workflow error: {e}", file=sys.stderr)
+            return 2
+    else:
+        workflow = build_txt2img_workflow(
+            prompt=args.prompt,
+            negative=args.negative,
+            checkpoint=checkpoint,
+            seed=seed,
+            width=args.width,
+            height=args.height,
+            steps=args.steps,
+            cfg=args.cfg,
+            filename_prefix="openclaw",
         )
-        return 3
 
     try:
-        workflow = _patch_workflow(
-            _load_workflow(wf_path), args.prompt, args.negative or None
-        )
-        client_id = str(uuid.uuid4())
-        prompt_id = _queue(workflow, client_id, base)
-        images = _wait_outputs(prompt_id, base)
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        _download_image(images[0], base, args.out)
-        print(json.dumps({"ok": True, "path": str(args.out), "prompt_id": prompt_id}))
-        return 0
-    except (urllib.error.URLError, OSError, RuntimeError, TimeoutError, ValueError) as e:
-        print(json.dumps({"ok": False, "error": str(e)}), file=sys.stderr)
+        prompt_id = queue_prompt(workflow)
+        images = wait_for_images(prompt_id, timeout_sec=float(args.timeout))
+    except (RuntimeError, TimeoutError) as e:
+        print(f"generation failed: {e}", file=sys.stderr)
         return 1
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    out_dir = _default_output_dir()
+    out_path = args.output or os.path.join(out_dir, f"comfyui_{stamp}.png")
+
+    try:
+        saved = download_image(images[0], out_path)
+    except (RuntimeError, OSError) as e:
+        print(f"download failed: {e}", file=sys.stderr)
+        return 1
+
+    result = {
+        "ok": True,
+        "path": os.path.abspath(saved),
+        "prompt_id": prompt_id,
+        "checkpoint": checkpoint,
+        "seed": seed,
+        "width": args.width,
+        "height": args.height,
+        "prompt": args.prompt,
+    }
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"saved {result['path']}")
+        print(f"prompt_id={prompt_id} checkpoint={checkpoint} seed={seed}")
+    return 0
 
 
 if __name__ == "__main__":

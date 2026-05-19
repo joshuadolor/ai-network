@@ -1,74 +1,74 @@
 ---
 name: local-image-gen
-description: Request images from ComfyUI on KUBB (Tailscale). Health check and generate via API workflow. Drafts only until Joshua approves publish.
+description: Generate images via ComfyUI on KUBB (Tailscale). Canonical tools in setup/ai-server/05-image-video/local. Drafts only until Joshua approves publish.
 user-invocable: true
 ---
 
 # Local image generation (KUBB ComfyUI)
 
-Images are generated on **KUBB** (AI server), **not** on this VPS. ComfyUI is **never** at `localhost` or `127.0.0.1` from Felix’s perspective.
+**Canonical source (read if confused):** `~/AINetwork/setup/ai-server/05-image-video/local/README.md`
 
-## Canonical URL (use this)
+Images run on **KUBB**, not this VPS. **Never** `localhost:8188` or `127.0.0.1`.
 
-**`http://100.86.160.110:8188`** — KUBB over Tailscale (also in `workspace/docs/comfyui-workflow.md`).
+## Environment (`~/.openclaw/.env` — scripts load; do not paste in chat)
 
-Do **not** use `http://localhost:8188`, `127.0.0.1`, or `host.docker.internal` unless Joshua explicitly says ComfyUI was moved to the VPS.
+| Variable | Example | Required |
+|----------|---------|----------|
+| `COMFYUI_BASE_URL` | `http://100.86.160.110:8188` | yes |
+| `COMFYUI_CHECKPOINT` | from `comfyui_list_models.py` | no (auto-picks first) |
+| `COMFYUI_WORKFLOW` | path to exported API JSON | no (built-in graph used) |
+| `COMFYUI_WORKFLOW_API` | legacy path on VPS | no |
 
-## Environment
+Also: `setup/ai-server/05-image-video/scripts/start_comfyui.sh` on KUBB.
 
-Set on the gateway host in `~/.openclaw/.env` (scripts load this automatically; you must **not** paste `.env` in chat):
+## Commands (always `exec` — skill `scripts/` synced from `05-image-video/local`)
 
-- `COMFYUI_BASE_URL=http://100.86.160.110:8188`
-- `COMFYUI_WORKFLOW_API=/home/deploy/.openclaw/comfyui-workflow-api.json`  
-  If missing, run: `bash ~/AINetwork/setup/vps-openclaw/scripts/install-comfyui-workflow.sh ~/AINetwork`
-- Optional: `COMFYUI_CHECKPOINT` — exact `.safetensors` name (`comfyui_list_models.py`)
+Working directory for imports: run from skill scripts dir or use full paths below.
 
-Canonical KUBB tools (repo): `setup/ai-server/05-image-video/local/`
-
-## How to run (always use scripts)
-
-Do **not** hand-write `curl` to ComfyUI. Do **not** open ComfyUI in the browser on localhost.
-
-Setup: `setup/ai-server/05-comfyui/README.md`, `setup/ai-server/05-image-video/scripts/start_comfyui.sh`, `workspace/docs/comfyui-workflow.md`.
-
-## Health check (exec)
+### 1. Health
 
     python3 {baseDir}/scripts/comfyui_health.py
 
-If unreachable: ComfyUI must be running on KUBB and `COMFYUI_BASE_URL` set in gateway `~/.openclaw/.env`.
-
-## List checkpoints (exec)
+### 2. List checkpoints (if generate fails on model name)
 
     python3 {baseDir}/scripts/comfyui_list_models.py
 
-If empty, Joshua must add a model under `Documents/ComfyUI/models/checkpoints/` on KUBB.
+### 3. Generate (built-in workflow — preferred)
 
-## Generate image (exec)
-
-Requires `COMFYUI_WORKFLOW_API` file on the VPS (preferred):
+Positional **prompt** (not `--prompt`). Save under workspace:
 
     python3 {baseDir}/scripts/comfyui_generate.py \
-      --prompt "description here" \
-      --out workspace/docs/images/YYYY-MM-DD-slug.png
+      "your description here" \
+      --output workspace/docs/images/YYYY-MM-DD-slug.png \
+      --json
 
-Optional: `--negative "blurry, watermark"`, `--checkpoint <name>` if workflow allows.
+Optional: `--negative "..."`, `--checkpoint exact_name.safetensors`, `-W 1024 -H 1024`, `--steps 20`, `--cfg 7`
 
-On success, script prints JSON with `path`. Attach or upload to Discord if size allows; always give the path in the **completion report**.
+### 4. Custom exported workflow (optional)
 
-## Workflow
+    python3 {baseDir}/scripts/comfyui_generate.py \
+      "prompt" \
+      --workflow ~/AINetwork/setup/ai-server/05-image-video/local/workflows/txt2img_api.json \
+      --output workspace/docs/images/out.png \
+      --json
 
-1. Confirm **prompt**, **aspect ratio**, and **purpose** (draft vs publish).
-2. Run **health check**; if fail, stop and report (ComfyUI down or wrong URL).
-3. If generation fails on checkpoint, run **list models** and retry with `--checkpoint` or ask Joshua to set `COMFYUI_CHECKPOINT` in `.env`.
-4. Run **comfyui_generate.py** with a clear `--out` under `workspace/docs/images/`.
-5. **Publishing** social posts or client assets requires explicit **approved** from Joshua.
+Or set `COMFYUI_WORKFLOW` in `.env` to that path.
 
-## Fallback
+## Workflow for Felix
 
-If `COMFYUI_WORKFLOW_API` is missing, tell Joshua to export API workflow from ComfyUI (see `05-comfyui/README.md`) — do not fake an image.
+1. Confirm prompt + draft vs publish (publish needs Joshua **approved**).
+2. Start **ralph-loop** if generation may take >2 min.
+3. `comfyui_health.py` → fail fast with clear error if KUBB down.
+4. `comfyui_list_models.py` if checkpoint errors.
+5. `comfyui_generate.py` with `--json` → read `path` in output → share in Discord + completion report.
+6. Do **not** `curl` ComfyUI by hand. Do **not** open ComfyUI in browser on localhost.
 
-If ComfyUI is down but **Ollama** has a vision/generation model Joshua enabled, say so and do not fake an image — offer text-only concept or wait.
+## If something is missing
+
+Search repo: `grep -ri comfyui ~/AINetwork/setup/ai-server/05-image-video/local`
+
+See `workspace/docs/comfyui-workflow.md` and `PROJECT-LOOKUP.md`.
 
 ## Open WebUI
 
-Joshua can also generate images in the browser via Open WebUI on the apps VPS (same `COMFYUI_BASE_URL`).
+Same `COMFYUI_BASE_URL` on apps VPS — `setup/vps-apps/02-open-webui/`.

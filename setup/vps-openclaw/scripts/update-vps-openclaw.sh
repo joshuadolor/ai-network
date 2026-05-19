@@ -180,18 +180,25 @@ done
 
 run mkdir -p "$OC/workspace/memory" "$OC/workspace/docs" "$OC/workspace/reference"
 
-# --- Sync ComfyUI API scripts into local-image-gen skill (canonical: ai-server/05-image-video/local) ---
-# Sync shared ComfyUI helpers only (skill keeps VPS-specific generate/health + comfyui_env)
+# --- Sync ComfyUI scripts from ai-server/05-image-video/local → local-image-gen skill ---
+echo ""
+echo "ComfyUI scripts (canonical: setup/ai-server/05-image-video/local):"
 if [[ -d "$LOCAL_IMG_SCRIPTS" && -d "$SKILLS_SRC/local-image-gen/scripts" ]]; then
-  for py in comfyui_client.py comfyui_list_models.py; do
+  for py in comfyui_client.py comfyui_list_models.py comfyui_generate.py comfyui_health.py; do
     src="$LOCAL_IMG_SCRIPTS/$py"
     [[ -f "$src" ]] || continue
+    dest="$SKILLS_SRC/local-image-gen/scripts/$py"
     if [[ "$DRY_RUN" -eq 1 ]]; then
-      echo "[dry-run] cp $src -> $SKILLS_SRC/local-image-gen/scripts/"
+      echo "[dry-run] cp $src -> $dest"
     else
-      cp "$src" "$SKILLS_SRC/local-image-gen/scripts/"
+      cp "$src" "$dest"
+      chmod 700 "$dest"
+      echo "  synced $py"
     fi
   done
+  echo "  kept skill-only: comfyui_env.py (loads ~/.openclaw/.env, rejects localhost)"
+else
+  echo "  skip — missing $LOCAL_IMG_SCRIPTS or local-image-gen/scripts"
 fi
 
 # --- Workspace skills (every subfolder under skills/ except README) ---
