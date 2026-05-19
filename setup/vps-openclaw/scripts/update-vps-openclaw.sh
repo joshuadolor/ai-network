@@ -196,6 +196,18 @@ if [[ -d "$LOCAL_IMG_SCRIPTS" && -d "$SKILLS_SRC/local-image-gen/scripts" ]]; th
       echo "  synced $py"
     fi
   done
+  for sh in generate_image.sh; do
+    src="$LOCAL_IMG_SCRIPTS/$sh"
+    [[ -f "$src" ]] || continue
+    dest="$SKILLS_SRC/local-image-gen/scripts/$sh"
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      echo "[dry-run] cp $src -> $dest"
+    else
+      cp "$src" "$dest"
+      chmod 700 "$dest"
+      echo "  synced $sh"
+    fi
+  done
   echo "  kept skill-only: comfyui_env.py (loads ~/.openclaw/.env, rejects localhost)"
 else
   echo "  skip — missing $LOCAL_IMG_SCRIPTS or local-image-gen/scripts"

@@ -1,86 +1,49 @@
 ---
 name: local-image-gen
-description: Generate images via ComfyUI on KUBB (Tailscale). Canonical tools in setup/ai-server/05-image-video/local. Drafts only until Joshua approves publish.
+description: Generate images via ComfyUI on KUBB (Tailscale). Use generate_image.sh for Discord requests. Never claim started without exec output.
 user-invocable: true
 ---
 
 # Local image generation (KUBB ComfyUI)
 
-**Canonical source (read if confused):** `~/AINetwork/setup/ai-server/05-image-video/local/README.md`
+Images run on **KUBB** (`COMFYUI_BASE_URL`, e.g. `http://100.86.160.110:8188`). **Never** `localhost`.
 
-Images run on **KUBB**, not this VPS. **Never** `localhost:8188` or `127.0.0.1`.
+## Hard rules (read first)
 
-## Environment (`~/.openclaw/.env` — scripts load; do not paste in chat)
+1. **Never** say "initiated", "in progress", "shortly", or "check in a moment" **without** running `exec` in the **same turn**.
+2. If Joshua asks for an image → **run** `generate_image.sh` immediately (one message max before exec: "Generating on KUBB…").
+3. After `exec`, reply with **real** result from JSON (`ok`, `path`, or `error`). Attach/send the file path in Discord if your tools allow.
+4. Wrong CLI flags break generation:
+   - Prompt is **positional** (first argument), not `--prompt`
+   - Output flag is **`--output` or `-o`**, not a made-up path
+5. Script path must include **`scripts/`**:
+   - `~/.openclaw/workspace/skills/local-image-gen/scripts/generate_image.sh`
 
-| Variable | Example | Required |
-|----------|---------|----------|
-| `COMFYUI_BASE_URL` | `http://100.86.160.110:8188` | yes |
-| `COMFYUI_CHECKPOINT` | from `comfyui_list_models.py` | no (auto-picks first) |
-| `COMFYUI_WORKFLOW` | path to exported API JSON | no (built-in graph used) |
-| `COMFYUI_WORKFLOW_API` | legacy path on VPS | no |
+## One-shot command (preferred for Discord)
 
-Also: `setup/ai-server/05-image-video/scripts/start_comfyui.sh` on KUBB.
+    bash {baseDir}/scripts/generate_image.sh "a cat playing basketball"
 
-## Commands (always `exec` — skill `scripts/` synced from `05-image-video/local`)
+Optional explicit output path:
 
-Working directory for imports: run from skill scripts dir or use full paths below.
+    bash {baseDir}/scripts/generate_image.sh "a cat playing basketball" \
+      /home/deploy/.openclaw/workspace/docs/images/cat-basketball.png
 
-### 1. Health
+Parse stdout JSON. On success, tell Joshua the **`path`** and share the image. On failure, paste the **exact error** and run `comfyui_list_models.py` if checkpoint-related.
+
+## Manual steps (if debugging)
 
     python3 {baseDir}/scripts/comfyui_health.py
-
-### 2. List checkpoints (if generate fails on model name)
-
     python3 {baseDir}/scripts/comfyui_list_models.py
+    python3 {baseDir}/scripts/comfyui_generate.py "prompt here" \
+      --output workspace/docs/images/out.png --json
 
-### 3. Generate (built-in workflow — preferred)
+## Env (`~/.openclaw/.env`, scripts load it)
 
-Positional **prompt** (not `--prompt`). Save under workspace:
+- `COMFYUI_BASE_URL=http://100.86.160.110:8188`
+- Optional: `COMFYUI_CHECKPOINT`, `COMFYUI_WORKFLOW`
 
-    python3 {baseDir}/scripts/comfyui_generate.py \
-      "your description here" \
-      --output workspace/docs/images/YYYY-MM-DD-slug.png \
-      --json
+Repo reference: `~/AINetwork/setup/ai-server/05-image-video/local/README.md`
 
-Optional: `--negative "..."`, `--checkpoint exact_name.safetensors`, `-W 1024 -H 1024`, `--steps 20`, `--cfg 7`
+## Long runs
 
-### 4. Custom exported workflow (optional)
-
-    python3 {baseDir}/scripts/comfyui_generate.py \
-      "prompt" \
-      --workflow ~/AINetwork/setup/ai-server/05-image-video/local/workflows/txt2img_api.json \
-      --output workspace/docs/images/out.png \
-      --json
-
-Or set `COMFYUI_WORKFLOW` in `.env` to that path.
-
-## Workflow for Felix
-
-1. Confirm prompt + draft vs publish (publish needs Joshua **approved**).
-2. Start **ralph-loop** if generation may take >2 min.
-3. `comfyui_health.py` → fail fast with clear error if KUBB down.
-4. `comfyui_list_models.py` if checkpoint errors.
-5. `comfyui_generate.py` with `--json` → read `path` in output → share in Discord + completion report.
-6. Do **not** `curl` ComfyUI by hand. Do **not** open ComfyUI in browser on localhost.
-
-## Proceed behavior (strict)
-
-If Joshua says **"do it" / "proceed" / "go"**:
-
-- Run the command immediately (do not restate the same command repeatedly).
-- If a precheck is needed, run it once then immediately run generate.
-- If command fails, show the exact error and next fix.
-
-Correct generate path includes `scripts/`:
-
-`python3 ~/.openclaw/workspace/skills/local-image-gen/scripts/comfyui_generate.py ...`
-
-## If something is missing
-
-Search repo: `grep -ri comfyui ~/AINetwork/setup/ai-server/05-image-video/local`
-
-See `workspace/docs/comfyui-workflow.md` and `PROJECT-LOOKUP.md`.
-
-## Open WebUI
-
-Same `COMFYUI_BASE_URL` on apps VPS — `setup/vps-apps/02-open-webui/`.
+If generation may exceed ~2 minutes, start **ralph-loop** and still run `generate_image.sh` in the same session — do not defer to "later".

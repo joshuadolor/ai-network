@@ -22,6 +22,7 @@ On the **OpenClaw VPS**, set `COMFYUI_BASE_URL` in `~/.openclaw/.env` and restar
 | `comfyui_health.py` | Ping `/system_stats` |
 | `comfyui_list_models.py` | List checkpoint filenames |
 | `comfyui_generate.py` | Queue txt2img, wait, download PNG |
+| `generate_image.sh` | Health check + generate (one command for Felix/Discord) |
 | `comfyui_client.py` | Shared library (import only) |
 | `workflows/txt2img_api.json` | Reference graph; optional `--workflow` |
 
@@ -69,7 +70,14 @@ On the OpenClaw VPS:
 3. Skill: `setup/vps-openclaw/skills/local-image-gen/SKILL.md`
 4. Workspace cheat sheet: `~/.openclaw/workspace/docs/comfyui-workflow.md`
 
-**Felix command shape:** positional prompt, not `--prompt`:
+**Felix (preferred):** one-shot wrapper — never say "initiated" without running this:
+
+```bash
+bash ~/.openclaw/workspace/skills/local-image-gen/scripts/generate_image.sh \
+  "a cat playing basketball"
+```
+
+**Manual:** positional prompt, not `--prompt`:
 
 ```bash
 python3 ~/.openclaw/workspace/skills/local-image-gen/scripts/comfyui_generate.py \
